@@ -299,5 +299,32 @@ recordRoutes.route("/dummy/:database/:collection").get(auth, async function (req
         });
 });
 
+/**
+ * Cart comparator API
+ */
+recordRoutes.route("/cart/create").post(function (req, res) {
+    // Insert swipe informations
+    const dbConnect = dbo.getDb();
+    const requestBody = {
+        card_id: req.body.id,
+        created_date: new Date(),
+        last_modified: new Date(),
+        user: req.body.session_id,
+        rows: req.body.direction,
+        extra: { }
+    };
+
+    dbConnect
+        .collection("carts")
+        .insertOne(requestBody, function (err, result) {
+            if (err) {
+                res.status(400).send("Error inserting matches!");
+            } else {
+                console.log(`Added ${result.insertedCount} a new cart with id ${result.insertedId}`);
+                res.status(204).send();
+            }
+        });
+});
+
 
 module.exports = recordRoutes;
